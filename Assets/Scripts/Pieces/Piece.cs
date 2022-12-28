@@ -16,11 +16,7 @@ public class Piece : MonoBehaviour
         rook
     }
 
-    [Range(0, 7)]
-    [SerializeField] private int x;
-    [Range(0, 7)]
-    [SerializeField] private int y;
-
+    [SerializeField] Vector2 position;
     [SerializeField] private bool isWhite;
 
     [SerializeField] private TypeOfPiece typeOfPiece;
@@ -28,6 +24,8 @@ public class Piece : MonoBehaviour
 
     private BoardManager boardManager;
     private Transform _transform;
+
+    private bool isGrabbed = false;
 
 
     // Start is called before the first frame update
@@ -41,8 +39,31 @@ public class Piece : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //show the piece on the board
-        _transform.position = boardManager.FromCoordinatesToPosition(x, y);
+
+        if (isGrabbed)
+        {
+            GrabPiece();
+        }
+        else
+        {
+            //show the piece on the board
+            _transform.position = boardManager.FromCoordinatesToPosition((int)position.x, (int)position.y);
+        }
+
+    }
+
+    private void OnMouseDown()
+    {
+        //grab the piece
+        isGrabbed = true;
+    }
+
+    private void OnMouseUp()
+    {
+        //drop the piece
+        isGrabbed = false;
+        ReleasePiece();
+
     }
 
     //onvalidate is called when the inspector is updated
@@ -59,10 +80,23 @@ public class Piece : MonoBehaviour
         }
     }
 
-    public void SetPosition(int x, int y)
+
+    private void GrabPiece()
     {
-        this.x = x;
-        this.y = y;
+        //grab the piece
+        _transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        _transform.position = new Vector3(_transform.position.x, _transform.position.y, 0.4f);
+    }
+
+    private void ReleasePiece()
+    {
+        //drop the piece
+        this.position = boardManager.FromSquarePositionToCoordinates(boardManager.GetSquareUnderTheMouse().transform.position);
+    }
+
+    public void SetPosition(Vector2 position)
+    {
+        this.position = position;
     }
 
     public void SetType(TypeOfPiece typeOfPiece)
