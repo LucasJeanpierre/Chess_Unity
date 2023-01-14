@@ -8,7 +8,13 @@ public class BoardManager : MonoBehaviour
     [SerializeField] Color whiteColor;
     [SerializeField] Color blackColor;
 
+
+    [SerializeField] Color availableMoveWhiteColor;
+
+    [SerializeField] Color availableMoveBlackColor;
+
     [SerializeField] float boardSize;
+
 
     public Piece piecePrefab;
 
@@ -216,7 +222,7 @@ public class BoardManager : MonoBehaviour
         return null;
     }
 
-    private void updateSquaresColor()
+    public void updateSquaresColor()
     {
         for (int i = 0; i < 8; i++)
         {
@@ -233,6 +239,26 @@ public class BoardManager : MonoBehaviour
                     this.squares[i, j].GetComponent<Renderer>().material.SetColor("_EmissionColor", blackColor);
                 }
             }
+        }
+    }
+
+    public void ShowPossibleMoves(List<Vector2> possibleMoves)
+    {
+
+        //show the possible moves
+        foreach (Vector2 move in possibleMoves)
+        {
+            if (((int)move.x + (int)move.y) % 2 == 1)
+            {
+                this.squares[(int)move.x, (int)move.y].GetComponent<Renderer>().material.color = availableMoveWhiteColor;
+                this.squares[(int)move.x, (int)move.y].GetComponent<Renderer>().material.SetColor("_EmissionColor", availableMoveWhiteColor);
+            }
+            else
+            {
+                this.squares[(int)move.x, (int)move.y].GetComponent<Renderer>().material.color = availableMoveBlackColor;
+                this.squares[(int)move.x, (int)move.y].GetComponent<Renderer>().material.SetColor("_EmissionColor", availableMoveBlackColor);
+            }
+
         }
     }
 

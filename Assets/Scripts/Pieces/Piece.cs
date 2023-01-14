@@ -23,6 +23,8 @@ public class Piece : MonoBehaviour
 
 
     private BoardManager boardManager;
+
+    private PieceMovement pieceMovement;
     private Transform _transform;
 
     private bool isGrabbed = false;
@@ -34,6 +36,7 @@ public class Piece : MonoBehaviour
         //get the board manager
         boardManager = GameObject.Find("BoardManager").GetComponent<BoardManager>();
         _transform = GetComponent<Transform>();
+        pieceMovement = GetComponent<PieceMovement>();
     }
 
     // Update is called once per frame
@@ -86,12 +89,22 @@ public class Piece : MonoBehaviour
         //grab the piece
         _transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         _transform.position = new Vector3(_transform.position.x, _transform.position.y, 0.4f);
+
+        List<Vector2> possibleMoves = pieceMovement.GetPossibleMoves(this);
+
+        boardManager.ShowPossibleMoves(possibleMoves);
     }
 
     private void ReleasePiece()
     {
         //drop the piece
-        this.position = boardManager.FromSquarePositionToCoordinates(boardManager.GetSquareUnderTheMouse().transform.position);
+        if (boardManager.GetSquareUnderTheMouse() != null)
+        {
+            position = boardManager.FromSquarePositionToCoordinates(boardManager.GetSquareUnderTheMouse().transform.position);
+        }
+
+        boardManager.updateSquaresColor();
+   
     }
 
     public void SetPosition(Vector2 position)
@@ -109,5 +122,20 @@ public class Piece : MonoBehaviour
     {
         this.isWhite = isWhite;
         OnValidate();
+    }
+
+    public Vector2 GetPosition()
+    {
+        return position;
+    }
+
+    public bool IsWhite()
+    {
+        return isWhite;
+    }
+
+    public TypeOfPiece GetTypeOfPiece()
+    {
+        return typeOfPiece;
     }
 }
