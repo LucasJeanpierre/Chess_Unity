@@ -238,6 +238,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteColor: {r: 0.41869882, g: 0.6882469, b: 0.9150943, a: 0}
   blackColor: {r: 0.10613206, g: 0.12020692, b: 0.14150941, a: 0}
+  availableMoveWhiteColor: {r: 1, g: 0.4481132, b: 0.4481132, a: 0}
+  availableMoveBlackColor: {r: 0.5377358, g: 0, b: 0, a: 0}
   boardSize: 8
   piecePrefab: {fileID: 7234841010159705018, guid: a93437e531820e242b1c40fd8045f2eb, type: 3}
 --- !u!4 &1379910748
