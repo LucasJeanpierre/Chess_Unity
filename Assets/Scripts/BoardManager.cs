@@ -21,6 +21,8 @@ public class BoardManager : MonoBehaviour
     //2d array of square
     public GameObject[,] squares;
 
+    private List<Piece> pieceList = new List<Piece>();
+
 
 
 
@@ -81,6 +83,7 @@ public class BoardManager : MonoBehaviour
             piece.SetPosition(new Vector2(i, 1));
             piece.SetColor(true);
             piece.SetType(Piece.TypeOfPiece.pawn);
+            pieceList.Add(piece);
         }
 
         //create the black pawns
@@ -91,6 +94,7 @@ public class BoardManager : MonoBehaviour
             piece.SetPosition(new Vector2(i, 6));
             piece.SetColor(false);
             piece.SetType(Piece.TypeOfPiece.pawn);
+            pieceList.Add(piece);
         }
 
         //create the white rooks
@@ -101,6 +105,7 @@ public class BoardManager : MonoBehaviour
             piece.SetPosition(new Vector2(i * 7, 0));
             piece.SetColor(true);
             piece.SetType(Piece.TypeOfPiece.rook);
+            pieceList.Add(piece);
         }
 
         //create the black rooks
@@ -111,6 +116,7 @@ public class BoardManager : MonoBehaviour
             piece.SetPosition(new Vector2(i * 7, 7));
             piece.SetColor(false);
             piece.SetType(Piece.TypeOfPiece.rook);
+            pieceList.Add(piece);
         }
 
         //create the white knights
@@ -121,6 +127,7 @@ public class BoardManager : MonoBehaviour
             piece.SetPosition(new Vector2(i * 5 + 1, 0));
             piece.SetColor(true);
             piece.SetType(Piece.TypeOfPiece.knight);
+            pieceList.Add(piece);
         }
 
         //create the black knights
@@ -131,6 +138,7 @@ public class BoardManager : MonoBehaviour
             piece.SetPosition(new Vector2(i * 5 + 1, 7));
             piece.SetColor(false);
             piece.SetType(Piece.TypeOfPiece.knight);
+            pieceList.Add(piece);
         }
 
         //create the white bishops
@@ -141,6 +149,7 @@ public class BoardManager : MonoBehaviour
             piece.SetPosition(new Vector2(i * 3 + 2, 0));
             piece.SetColor(true);
             piece.SetType(Piece.TypeOfPiece.bishop);
+            pieceList.Add(piece);
         }
 
         //create the black bishops
@@ -151,6 +160,7 @@ public class BoardManager : MonoBehaviour
             piece.SetPosition(new Vector2(i * 3 + 2, 7));
             piece.SetColor(false);
             piece.SetType(Piece.TypeOfPiece.bishop);
+            pieceList.Add(piece);
         }
 
         //create the white queen
@@ -159,6 +169,7 @@ public class BoardManager : MonoBehaviour
         whiteQueen.SetPosition(new Vector2(3, 0));
         whiteQueen.SetColor(true);
         whiteQueen.SetType(Piece.TypeOfPiece.queen);
+        pieceList.Add(whiteQueen);
 
         //create the black queen
         Piece blackQueen = Instantiate(piecePrefab, pieces.transform);
@@ -166,6 +177,7 @@ public class BoardManager : MonoBehaviour
         blackQueen.SetPosition(new Vector2(3, 7));
         blackQueen.SetColor(false);
         blackQueen.SetType(Piece.TypeOfPiece.queen);
+        pieceList.Add(blackQueen);
 
         //create the white king
         Piece whiteKing = Instantiate(piecePrefab, pieces.transform);
@@ -173,6 +185,7 @@ public class BoardManager : MonoBehaviour
         whiteKing.SetPosition(new Vector2(4, 0));
         whiteKing.SetColor(true);
         whiteKing.SetType(Piece.TypeOfPiece.king);
+        pieceList.Add(whiteKing);
 
         //create the black king
         Piece blackKing = Instantiate(piecePrefab, pieces.transform);
@@ -180,6 +193,7 @@ public class BoardManager : MonoBehaviour
         blackKing.SetPosition(new Vector2(4, 7));
         blackKing.SetColor(false);
         blackKing.SetType(Piece.TypeOfPiece.king);
+        pieceList.Add(blackKing);
     }
 
     /**
@@ -260,6 +274,26 @@ public class BoardManager : MonoBehaviour
             }
 
         }
+    }
+
+    public bool IsAPieceOnTheSquare(Vector2 position)
+    {
+        foreach (Piece piece in pieceList)
+        {
+            if (piece.GetPosition() == position)
+                return true;
+        }
+        return false;
+    }
+
+    public Piece GetPieceOnTheSquare(Vector2 position)
+    {
+        foreach (Piece piece in pieceList)
+        {
+            if (piece.GetPosition() == position)
+                return piece;
+        }
+        return null;
     }
 
     // Update is called once per frame

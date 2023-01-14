@@ -6,10 +6,12 @@ using UnityEngine;
 public class PieceMovement : MonoBehaviour
 {
 
+    private BoardManager boardManager;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        boardManager = GameObject.Find("BoardManager").GetComponent<BoardManager>();
     }
 
     // Update is called once per frame
@@ -24,19 +26,70 @@ public class PieceMovement : MonoBehaviour
         List<Vector2> possibleMoves = new List<Vector2>();
         if (piece.IsWhite())
         {
+            for (int i = -1; i <= 1; i += 2)
+            {
+                if (piece.GetPosition().x + i >= 0 && piece.GetPosition().x + i <= 7)
+                {
+                    if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + 1)))
+                    {
+                        if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + 1)).IsWhite() == false)
+                        {
+                            possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + 1));
+                        }
+                    }
+                }
+            }
+
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x, piece.GetPosition().y + 1)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y + 1));
+            }
+            else
+            {
+                return possibleMoves;
+            }
+
             if (piece.GetPosition().y == 1)
             {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y + 2));
+                if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x, piece.GetPosition().y + 2)) == false)
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y + 2));
+                }
             }
-            possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y + 1));
+
         }
         else
         {
+            for (int i = -1; i <= 1; i += 2)
+            {
+                if (piece.GetPosition().x + i >= 0 && piece.GetPosition().x + i <= 7)
+                {
+                    if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y - 1)))
+                    {
+                        if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y - 1)).IsWhite() == true)
+                        {
+                            possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y - 1));
+                        }
+                    }
+                }
+            }
+
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x, piece.GetPosition().y - 1)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y - 1));
+            }
+            else
+            {
+                return possibleMoves;
+            }
+
             if (piece.GetPosition().y == 6)
             {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y - 2));
+                if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x, piece.GetPosition().y - 2)) == false)
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y - 2));
+                }
             }
-            possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y - 1));
         }
         return possibleMoves;
     }
@@ -44,17 +97,83 @@ public class PieceMovement : MonoBehaviour
     public List<Vector2> GetStraightPossibleMoves(Piece piece)
     {
         List<Vector2> possibleMoves = new List<Vector2>();
-        for (int i = 0; i < 8; i++)
+        Vector2 _pos = new Vector2(piece.GetPosition().x, piece.GetPosition().y);
+
+        while (_pos.x < 7)
         {
-            if (piece.GetPosition().x != i)
+            _pos.x++;
+            if (boardManager.IsAPieceOnTheSquare(_pos) == false)
             {
-                possibleMoves.Add(new Vector2(i, piece.GetPosition().y));
+                possibleMoves.Add(_pos);
             }
-            if (piece.GetPosition().y != i)
+            else
             {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x, i));
-            } 
+                if (boardManager.GetPieceOnTheSquare(_pos).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(_pos);
+                }
+                break;
+            }
         }
+
+        _pos.x = piece.GetPosition().x;
+
+        while (_pos.x > 0)
+        {
+            _pos.x--;
+            if (boardManager.IsAPieceOnTheSquare(_pos) == false)
+            {
+                possibleMoves.Add(_pos);
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(_pos).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(_pos);
+                }
+                break;
+            }
+        }
+
+        _pos.x = piece.GetPosition().x;
+
+        while (_pos.y < 7)
+        {
+            _pos.y++;
+            if (boardManager.IsAPieceOnTheSquare(_pos) == false)
+            {
+                possibleMoves.Add(_pos);
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(_pos).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(_pos);
+                }
+                break;
+            }
+        }
+
+        _pos.y = piece.GetPosition().y;
+
+        while (_pos.y > 0)
+        {
+            _pos.y--;
+            if (boardManager.IsAPieceOnTheSquare(_pos) == false)
+            {
+                possibleMoves.Add(_pos);
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(_pos).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(_pos);
+                }
+                break;
+            }
+        }
+
+
         return possibleMoves;
     }
 
@@ -66,7 +185,18 @@ public class PieceMovement : MonoBehaviour
         {
             if (piece.GetPosition().x - i >= 0 && piece.GetPosition().y + i < 8)
             {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y + i));
+                if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y + i)) == false)
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y + i));
+                }
+                else
+                {
+                    if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y + i)).IsWhite() != piece.IsWhite())
+                    {
+                        possibleMoves.Add(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y + i));
+                    }
+                    break;
+                }
             }
         }
 
@@ -75,7 +205,18 @@ public class PieceMovement : MonoBehaviour
         {
             if (piece.GetPosition().x + i < 8 && piece.GetPosition().y + i < 8)
             {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + i));
+                if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + i)) == false)
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + i));
+                }
+                else
+                {
+                    if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + i)).IsWhite() != piece.IsWhite())
+                    {
+                        possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + i));
+                    }
+                    break;
+                }
             }
         }
 
@@ -84,7 +225,18 @@ public class PieceMovement : MonoBehaviour
         {
             if (piece.GetPosition().x - i >= 0 && piece.GetPosition().y - i >= 0)
             {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y - i));
+                if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y - i)) == false)
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y - i));
+                }
+                else
+                {
+                    if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y - i)).IsWhite() != piece.IsWhite())
+                    {
+                        possibleMoves.Add(new Vector2(piece.GetPosition().x - i, piece.GetPosition().y - i));
+                    }
+                    break;
+                }
             }
         }
 
@@ -93,87 +245,173 @@ public class PieceMovement : MonoBehaviour
         {
             if (piece.GetPosition().x + i < 8 && piece.GetPosition().y - i >= 0)
             {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y - i));
+                if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y - i)) == false)
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y - i));
+                }
+                else
+                {
+                    if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y - i)).IsWhite() != piece.IsWhite())
+                    {
+                        possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y - i));
+                    }
+                    break;
+                }
             }
         }
+
         return possibleMoves;
     }
 
     public List<Vector2> GetKingPossibleMoves(Piece piece)
     {
         List<Vector2> possibleMoves = new List<Vector2>();
-        if (piece.GetPosition().x + 1 < 8)
+        for (int i = -1; i < 2; i++)
         {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y));
-            if (piece.GetPosition().y + 1 < 8)
+            for (int j = -1; j < 2; j++)
             {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y + 1));
+                if (piece.GetPosition().x + i < 8 && piece.GetPosition().y + j < 8 && piece.GetPosition().x + i >= 0 && piece.GetPosition().y + j >= 0)
+                {
+                    if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + j)) == false)
+                    {
+                        possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + j));
+                    }
+                    else
+                    {
+                        if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + j)).IsWhite() != piece.IsWhite())
+                        {
+                            possibleMoves.Add(new Vector2(piece.GetPosition().x + i, piece.GetPosition().y + j));
+                        }
+                    }
+                }
             }
-            if (piece.GetPosition().y - 1 >= 0)
-            {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y - 1));
-            }
-        }
-
-        if (piece.GetPosition().x - 1 >= 0)
-        {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y));
-            if (piece.GetPosition().y + 1 < 8)
-            {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y + 1));
-            }
-            if (piece.GetPosition().y - 1 >= 0)
-            {
-                possibleMoves.Add(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y - 1));
-            }
-        }
-
-        if (piece.GetPosition().y + 1 < 8)
-        {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y + 1));
-        }
-
-        if (piece.GetPosition().y - 1 >= 0)
-        {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x, piece.GetPosition().y - 1));
         }
         return possibleMoves;
     }
 
-    public List<Vector2> GetKnightPossibleMoves(Piece piece) {
+    public List<Vector2> GetKnightPossibleMoves(Piece piece)
+    {
         List<Vector2> possibleMoves = new List<Vector2>();
         if (piece.GetPosition().x + 1 < 8 && piece.GetPosition().y + 2 < 8)
         {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y + 2));
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y + 2)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y + 2));
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y + 2)).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y + 2));
+                }
+            }
         }
-        if (piece.GetPosition().x + 2 < 8 && piece.GetPosition().y + 1 < 8)
-        {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y + 1));
-        }
-        if (piece.GetPosition().x + 2 < 8 && piece.GetPosition().y - 1 >= 0)
-        {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y - 1));
-        }
+
         if (piece.GetPosition().x + 1 < 8 && piece.GetPosition().y - 2 >= 0)
         {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y - 2));
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y - 2)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y - 2));
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y - 2)).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x + 1, piece.GetPosition().y - 2));
+                }
+            }
         }
-        if (piece.GetPosition().x - 1 >= 0 && piece.GetPosition().y - 2 >= 0)
-        {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y - 2));
-        }
-        if (piece.GetPosition().x - 2 >= 0 && piece.GetPosition().y - 1 >= 0)
-        {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y - 1));
-        }
-        if (piece.GetPosition().x - 2 >= 0 && piece.GetPosition().y + 1 < 8)
-        {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y + 1));
-        }
+
         if (piece.GetPosition().x - 1 >= 0 && piece.GetPosition().y + 2 < 8)
         {
-            possibleMoves.Add(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y + 2));
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y + 2)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y + 2));
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y + 2)).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y + 2));
+                }
+            }
         }
+
+        if (piece.GetPosition().x - 1 >= 0 && piece.GetPosition().y - 2 >= 0)
+        {
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y - 2)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y - 2));
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y - 2)).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x - 1, piece.GetPosition().y - 2));
+                }
+            }
+        }
+
+        if (piece.GetPosition().x + 2 < 8 && piece.GetPosition().y + 1 < 8)
+        {
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y + 1)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y + 1));
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y + 1)).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y + 1));
+                }
+            }
+        }
+
+        if (piece.GetPosition().x + 2 < 8 && piece.GetPosition().y - 1 >= 0)
+        {
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y - 1)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y - 1));
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y - 1)).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x + 2, piece.GetPosition().y - 1));
+                }
+            }
+        }
+
+        if (piece.GetPosition().x - 2 >= 0 && piece.GetPosition().y + 1 < 8)
+        {
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y + 1)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y + 1));
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y + 1)).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y + 1));
+                }
+            }
+        }
+
+        if (piece.GetPosition().x - 2 >= 0 && piece.GetPosition().y - 1 >= 0)
+        {
+            if (boardManager.IsAPieceOnTheSquare(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y - 1)) == false)
+            {
+                possibleMoves.Add(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y - 1));
+            }
+            else
+            {
+                if (boardManager.GetPieceOnTheSquare(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y - 1)).IsWhite() != piece.IsWhite())
+                {
+                    possibleMoves.Add(new Vector2(piece.GetPosition().x - 2, piece.GetPosition().y - 1));
+                }
+            }
+        }
+
         return possibleMoves;
     }
 
